@@ -28,8 +28,8 @@
 AudioEngine::AudioEngine(QString in, QString out) :
 	m_outputdevice(out),
     m_inputdevice(in),
-	m_out(nullptr),
-	m_in(nullptr),
+    //m_out(nullptr),
+    //m_in(nullptr),
     m_srm(1)
 {
 
@@ -48,18 +48,21 @@ AudioEngine::~AudioEngine()
 QStringList AudioEngine::discover_audio_devices(uint8_t d)
 {
 	QStringList list;
-	QAudio::Mode m = (d) ? QAudio::AudioOutput :  QAudio::AudioInput;
+    /*
+    QAudio::Mode m = (d) ? QAudio::AudioOutput :  QAudio::AudioInput;
 	QList<QAudioDeviceInfo> devices = QAudioDeviceInfo::availableDevices(m);
 
 	for (QList<QAudioDeviceInfo>::ConstIterator it = devices.constBegin(); it != devices.constEnd(); ++it ) {
 		//fprintf(stderr, "Playback device name = %s\n", (*it).deviceName().toStdString().c_str());fflush(stderr);
 		list.append((*it).deviceName());
 	}
+    */
 	return list;
 }
 
 void AudioEngine::init()
 {
+    /*
 	QAudioFormat format;
 	QAudioFormat tempformat;
 	format.setSampleRate(8000);
@@ -147,56 +150,63 @@ void AudioEngine::init()
 		m_in = new QAudioInput(info, format, this);
 		fprintf(stderr, "Capture device: %s SR: %d resample factor: %f\n", info.deviceName().toStdString().c_str(), sr, m_srm);fflush(stderr);
 	}
+    */
 }
 
 void AudioEngine::set_output_volume(qreal v)
 {
 	qDebug() << "set_output_volume() v == " << v;
-	m_out->setVolume(v);
+    //m_out->setVolume(v);
 }
 
 void AudioEngine::set_input_volume(qreal v)
 {
 	qDebug() << "set_input_volume() v == " << v;
-	m_in->setVolume(v);
+    //m_in->setVolume(v);
 }
 
 void AudioEngine::start_capture()
 {
+    /*
 	m_audioinq.clear();
 	if(m_in != nullptr){
 		m_indev = m_in->start();
 		connect(m_indev, SIGNAL(readyRead()), SLOT(input_data_received()));
 	}
+    */
 }
 
 void AudioEngine::stop_capture()
 {
+    /*
 	if(m_in != nullptr){
 		m_indev->disconnect();
 		m_in->stop();
 	}
+    */
 }
 
 void AudioEngine::start_playback()
 {
-	//m_out->reset();
-	m_outdev = m_out->start();
+    ////m_out->reset();
+    //m_outdev = m_out->start();
 }
 
 void AudioEngine::stop_playback()
 {
-	m_out->stop();
+    //m_out->stop();
 }
 
 void AudioEngine::input_data_received()
 {
+    /*
 	QByteArray data;
 	qint64 len = m_in->bytesReady();
 
 	if (len > 0){
 		data.resize(len);
 		m_indev->read(data.data(), len);
+    */
 /*
 		fprintf(stderr, "AUDIOIN: ");
 		for(int i = 0; i < len; ++i){
@@ -205,6 +215,7 @@ void AudioEngine::input_data_received()
 		fprintf(stderr, "\n");
 		fflush(stderr);
 */
+    /*
 		if(MACHAK){
 			std::vector<int16_t> samples;
 			for(int i = 0; i < len; i += 2){
@@ -220,10 +231,12 @@ void AudioEngine::input_data_received()
 			}
 		}
 	}
+    */
 }
 
 void AudioEngine::write(int16_t *pcm, size_t s)
 {
+    /*
 	m_maxlevel = 0;
 	m_outdev->write((const char *) pcm, sizeof(int16_t) * s);
 	for(uint32_t i = 0; i < s; ++i){
@@ -231,10 +244,12 @@ void AudioEngine::write(int16_t *pcm, size_t s)
 			m_maxlevel = pcm[i];
 		}
 	}
+    */
 }
 
 uint16_t AudioEngine::read(int16_t *pcm, int s)
 {
+    /*
 	m_maxlevel = 0;
 	if(m_audioinq.size() >= s){
 		for(int i = 0; i < s; ++i){
@@ -253,10 +268,13 @@ uint16_t AudioEngine::read(int16_t *pcm, int s)
 		//fprintf(stderr, "audio frame not avail size == %d\n", m_audioinq.size());
 		return 0;
 	}
+    */
+    return 0;
 }
 
 uint16_t AudioEngine::read(int16_t *pcm)
 {
+    /*
 	m_maxlevel = 0;
 	int s;
 	if(m_audioinq.size() >= 160){
@@ -273,8 +291,10 @@ uint16_t AudioEngine::read(int16_t *pcm)
 		}
 	}
 	return s;
+    */
+    return 0;
 }
-
+/*
 void AudioEngine::handleStateChanged(QAudio::State newState)
 {
 	switch (newState) {
@@ -294,3 +314,4 @@ void AudioEngine::handleStateChanged(QAudio::State newState)
 		break;
 	}
 }
+*/

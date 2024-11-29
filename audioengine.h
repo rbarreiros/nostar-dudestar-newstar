@@ -19,8 +19,6 @@
 #define AUDIOENGINE_H
 
 #include <QObject>
-#include <QAudioOutput>
-#include <QAudioInput>
 #include <QQueue>
 
 #define AUDIO_OUT 1
@@ -40,8 +38,8 @@ public:
 	void start_playback();
 	void stop_playback();
 	void write(int16_t *, size_t);
-	void set_output_buffer_size(uint32_t b) { m_out->setBufferSize(b); }
-	void set_input_buffer_size(uint32_t b) { if(m_in != nullptr) m_in->setBufferSize(b); }
+    void set_output_buffer_size(uint32_t b) { /*m_out->setBufferSize(b);*/ }
+    void set_input_buffer_size(uint32_t b) { /*if(m_in != nullptr) m_in->setBufferSize(b);*/ }
 	void set_output_volume(qreal);
 	void set_input_volume(qreal);
 	bool frame_available() { return (m_audioinq.size() >= 320) ? true : false; }
@@ -53,8 +51,8 @@ signals:
 private:
 	QString m_outputdevice;
 	QString m_inputdevice;
-	QAudioOutput *m_out;
-	QAudioInput *m_in;
+    //QAudioOutput *m_out;
+    //QAudioInput *m_in;
 	QIODevice *m_outdev;
 	QIODevice *m_indev;
 	QQueue<int16_t> m_audioinq;
@@ -63,7 +61,7 @@ private:
 
 private slots:
 	void input_data_received();
-	void handleStateChanged(QAudio::State newState);
+    //void handleStateChanged(QAudio::State newState);
 };
 
 #endif // AUDIOENGINE_H

@@ -30,6 +30,8 @@
 #include <QSerialPortInfo>
 #include <time.h>
 
+#include <QtAudio>
+
 #ifdef Q_OS_MACOS
 #include "micpermission.h"
 #endif
@@ -1675,8 +1677,10 @@ void DudeStar::process_connect()
 			connect(this, SIGNAL(input_source_changed(int, QString)), m_dmr, SLOT(input_src_changed(int, QString)));
 			connect(this, SIGNAL(dmr_tgid_changed(unsigned int)), m_dmr, SLOT(dmr_tgid_changed(unsigned int)));
 			connect(ui->checkPrivate, SIGNAL(stateChanged(int)), m_dmr, SLOT(dmrpc_state_changed(int)));
-			ui->checkPrivate->isChecked() ? emit ui->checkPrivate->stateChanged(2) : emit ui->checkPrivate->stateChanged(0);
-			connect(ui->checkSWRX, SIGNAL(stateChanged(int)), m_dmr, SLOT(swrx_state_changed(int)));
+
+            ui->checkPrivate->isChecked() ? emit ui->checkPrivate->checkStateChanged(Qt::Checked) : emit ui->checkPrivate->checkStateChanged(Qt::Unchecked);
+
+            connect(ui->checkSWRX, SIGNAL(stateChanged(int)), m_dmr, SLOT(swrx_state_changed(int)));
 			connect(ui->checkSWTX, SIGNAL(stateChanged(int)), m_dmr, SLOT(swtx_state_changed(int)));
 			connect(ui->pushTX, SIGNAL(pressed()), m_dmr, SLOT(start_tx()));
 			connect(ui->pushTX, SIGNAL(released()), m_dmr, SLOT(stop_tx()));
@@ -1785,7 +1789,7 @@ void DudeStar::process_codecgain_changed(int v)
 
 void DudeStar::process_volume_changed(int v)
 {
-	qreal linear_vol = QAudio::convertVolume(v / qreal(100.0),QAudio::LogarithmicVolumeScale,QAudio::LinearVolumeScale);
+    qreal linear_vol = QtAudio::convertVolume(v / qreal(100.0), QtAudio::LogarithmicVolumeScale, QtAudio::LinearVolumeScale);
 	if(!muted){
 		emit out_audio_vol_changed(linear_vol);
 	}
@@ -1794,7 +1798,7 @@ void DudeStar::process_volume_changed(int v)
 void DudeStar::process_mute_button()
 {
 	int v = ui->sliderVolume->value();
-	qreal linear_vol = QAudio::convertVolume(v / qreal(100.0),QAudio::LogarithmicVolumeScale,QAudio::LinearVolumeScale);
+    qreal linear_vol = QtAudio::convertVolume(v / qreal(100.0), QtAudio::LogarithmicVolumeScale, QtAudio::LinearVolumeScale);
 	if(muted){
 		muted = false;
 		emit out_audio_vol_changed(linear_vol);
@@ -1807,7 +1811,7 @@ void DudeStar::process_mute_button()
 
 void DudeStar::process_mic_gain_changed(int v)
 {
-	qreal linear_vol = QAudio::convertVolume(v / qreal(100.0),QAudio::LogarithmicVolumeScale,QAudio::LinearVolumeScale);
+    qreal linear_vol = QtAudio::convertVolume(v / qreal(100.0),QtAudio::LogarithmicVolumeScale, QtAudio::LinearVolumeScale);
 	if(!input_muted){
 		emit in_audio_vol_changed(linear_vol);
 	}
@@ -1816,7 +1820,7 @@ void DudeStar::process_mic_gain_changed(int v)
 void DudeStar::process_mic_mute_button()
 {
 	int v = ui->sliderMic->value();
-	qreal linear_vol = QAudio::convertVolume(v / qreal(100.0),QAudio::LogarithmicVolumeScale,QAudio::LinearVolumeScale);
+    qreal linear_vol = QtAudio::convertVolume(v / qreal(100.0), QtAudio::LogarithmicVolumeScale, QtAudio::LinearVolumeScale);
 	if(input_muted){
 		input_muted = false;
 		emit in_audio_vol_changed(linear_vol);
@@ -2048,14 +2052,17 @@ void DudeStar::update_nxdn_data(Codec::MODEINFO info)
 		}
 	}
 	QString t = QDateTime::fromMSecsSinceEpoch(info.ts).toString("yyyy.MM.dd hh:mm:ss.zzz");
-	if(info.stream_state == Codec::STREAM_NEW){
-		ui->textLog->append(t + " NXDN RX started src: " + info.srcid + " dst: " + info.dstid);
+
+    if(info.stream_state == Codec::STREAM_NEW){
+        ui->textLog->append(t + " NXDN RX started src: " + QString::number(info.srcid) + " dst: " + QString::number(info.dstid));
 	}
+
 	if(info.stream_state == Codec::STREAM_END){
-		ui->textLog->append(t + " NXDN RX ended src: " + info.srcid + " dst: " + info.dstid);
+        ui->textLog->append(t + " NXDN RX ended src: " + QString::number(info.srcid) + " dst: " + QString::number(info.dstid));
 	}
-	if(info.stream_state == Codec::STREAM_LOST){
-		ui->textLog->append(t + " NXDN RX lost src: " + info.srcid + " dst: " + info.dstid);
+
+    if(info.stream_state == Codec::STREAM_LOST){
+        ui->textLog->append(t + " NXDN RX lost src: " + QString::number(info.srcid) + " dst: " + QString::number(info.dstid));
 	}
 	++m_rxcnt;
 }

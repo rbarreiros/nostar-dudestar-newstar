@@ -209,10 +209,11 @@ QMap<QString, QString> SerialModem::discover_devices()
 				+ "Manufacturer: " + (!serialPortInfo.manufacturer().isEmpty() ? serialPortInfo.manufacturer() : blankString) + ENDLINE
 				+ "Serial number: " + (!serialPortInfo.serialNumber().isEmpty() ? serialPortInfo.serialNumber() : blankString) + ENDLINE
 				+ "Vendor Identifier: " + (serialPortInfo.hasVendorIdentifier() ? QByteArray::number(serialPortInfo.vendorIdentifier(), 16) : blankString) + ENDLINE
-				+ "Product Identifier: " + (serialPortInfo.hasProductIdentifier() ? QByteArray::number(serialPortInfo.productIdentifier(), 16) : blankString) + ENDLINE
-				+ "Busy: " + (serialPortInfo.isBusy() ? "Yes" : "No") + ENDLINE;
+                  + "Product Identifier: " + (serialPortInfo.hasProductIdentifier() ? QByteArray::number(serialPortInfo.productIdentifier(), 16) : blankString) + ENDLINE;
+                //+ "Busy: " + (serialPortInfo.isBusy() ? "Yes" : "No") + ENDLINE; // obsolete isBusy
 			fprintf(stderr, "%s", out.toStdString().c_str());fflush(stderr);
-			if((!serialPortInfo.description().isEmpty()) && (!serialPortInfo.isBusy())){
+
+            if((!serialPortInfo.description().isEmpty()) && (!serialPortInfo.isNull())) {
 				devlist[serialPortInfo.systemLocation()] = serialPortInfo.portName() + " - " + serialPortInfo.manufacturer() + " " + serialPortInfo.description() + " - " + serialPortInfo.serialNumber();
 			}
 		}
